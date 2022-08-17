@@ -35,6 +35,6 @@ def get_Coulomb_element( indices, RGrid ):
     psi_k = get_SP_state( k )
     psi_l = get_SP_state( l )
     V_nmkl = np.sum( np.conjugate(psi_n) * np.conjugate(psi_m) * \
-                np.conjugate(psi_k) * np.conjugate(psi_l)  ) * dR**2
+                psi_k * psi_l  ) * dR**2
     return V_nmkl
 
