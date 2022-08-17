@@ -6,4 +6,7 @@ def get_globals():
 
 def get_SP_state( n, RGrid ):
     return np.sqrt(2/L) * np.sin( n * np.pi * RGrid / L )
+
+def test():
+    return 0
     
