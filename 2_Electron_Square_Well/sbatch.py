@@ -7,5 +7,5 @@
 #SBATCH --output=main.out
 #SBATCH --error=main.err
 
-module load python3
+#module load python3
 python3 main.py
