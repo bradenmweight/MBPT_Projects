@@ -1,4 +1,6 @@
 import numpy as np
+import subprocess as sp
+from matplotlib import pyplot as plt
 
 def get_globals():
     # Simulation Box
@@ -17,15 +19,15 @@ def get_globals():
     N_electrons = 2
 
 def get_RGrid():
-    return np.linspace( -L/2, L/2, NL )
+    return np.linspace( 0, L, NL )
 
 def get_init_wavefunctions():
-    return ( 0 for j in range(N_electrons) ) # Start all electrons in ground state SP orbital
+    return ( j for j in range(1,N_electrons+1) ) # Start all electrons in ground state SP orbital
 
 def get_external_potential( RGrid ):
     V = np.zeros(( NL ))
     for xi in RGrid:
-        if ( -L_Well/2 < xi and xi < L_Well/2  ):
+        if ( 0 < xi and xi < L_Well  ):
             V[xi] = V_well
     return V
 
@@ -38,7 +40,9 @@ def get_SP_energy( n ):
 def get_init_rhos( wfn_sp_labels, RGrid ) :
     particle_rhos = []
     for j in wfn_sp_labels:
-        particle_rhos.append( np.outer( np.conjugate(get_SP_state( j, RGrid )), get_SP_state( j, RGrid ) ) )
+        state_j_left = np.conjugate(get_SP_state( j, RGrid ))
+        state_j_right = get_SP_state( j, RGrid )
+        particle_rhos.append( np.outer( state_j_left, state_j_right ) )
     return particle_rhos
 
 def get_Coulomb_element_single_particle( indices, RGrid ):
@@ -61,15 +65,24 @@ def get_Coulomb_element_single_particle( indices, RGrid ):
 
     return V_nmkl
 
+def save_1P_DMs( particle_rhos ):
+    DM_DIR = "1P_DMs/"
+    sp.call(f"mkdir {DM_DIR}",shell=True)
 
+    for j in range(N_electrons):
+        plt.imshow( particle_rhos[j], origin='lower' )
+        plt.savefig(f"{DM_DIR}/density_matrix_{j}.jpg",dpi=300)
 
 def main():
     get_globals()
     RGrid = get_RGrid()
     wfn_sp_labels = get_init_wavefunctions()
     particle_rhos = get_init_rhos( wfn_sp_labels, RGrid ) 
-    print( (particle_rhos[0])[np.diag_indices(NL)] )
     
+    save_1P_DMs( particle_rhos )
+
+
+
     #V_nmkl = get_Coulomb_element( (1,2,3,4), RGrid )
     #print( V_nmkl )
 
