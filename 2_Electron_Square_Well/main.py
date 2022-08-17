@@ -7,9 +7,10 @@ def get_globals():
     NL = 1000 # a.u.
 
     # External Potential
-    global L_Well, V_well
+    global L_Well, V_well, m
     L_Well = 4 # a.u.
     V_well = -1 # a.u.
+    m = 1 # a.u.
 
 def get_RGrid():
     return np.linspace( -L/2, L/2, NL )
