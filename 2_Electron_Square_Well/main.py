@@ -31,11 +31,23 @@ def get_SP_energy( n ):
 def get_Coulomb_element( indices, RGrid ):
     n,m,k,l = indices
     dR = RGrid[1]-RGrid[0]
-    psi_n = get_SP_state( n )
-    psi_m = get_SP_state( m )
-    psi_k = get_SP_state( k )
-    psi_l = get_SP_state( l )
+    psi_n = get_SP_state( n, RGrid )
+    psi_m = get_SP_state( m, RGrid )
+    psi_k = get_SP_state( k, RGrid )
+    psi_l = get_SP_state( l, RGrid )
     V_nmkl = np.sum( np.conjugate(psi_n) * np.conjugate(psi_m) * \
                 psi_k * psi_l  ) * dR**2
     return V_nmkl
 
+
+
+def main():
+    get_globals()
+    RGrid = get_RGrid()
+    V_nmkl = get_Coulomb_element( (1,2,3,4), RGrid )
+    print( V_nmkl )
+
+
+
+if ( __name__ == "__main__" ):
+    main()
