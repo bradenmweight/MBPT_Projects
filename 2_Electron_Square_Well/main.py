@@ -36,13 +36,16 @@ def get_Coulomb_element( indices, RGrid ):
     psi_k = get_SP_state( k, RGrid )
     psi_l = get_SP_state( l, RGrid )
 
-    R_DIFF = 1 / np.subtract.outer( RGrid, RGrid )
-    R_DIFF[ np.diag_indices(NL) ] = 0.0
+    R_DIFF = np.subtract.outer( RGrid, RGrid )
+    R_DIFF[ np.diag_indices(NL) ] = 1.0
+    V_int = 1 / R_DIFF
+    V_int[ np.diag_indices(NL) ] = 0.0
+
 
     # CHECK THIS ??? ~ BMW
     V_nmkl = 0
     for r1 in range( NL ):
-        V_nmkl += np.sum( np.conjugate(psi_n)[r1] * np.conjugate(psi_m)[:] * R_DIFF[r1,:] * psi_k[r1] * psi_l[:] )
+        V_nmkl += np.sum( np.conjugate(psi_n)[r1] * np.conjugate(psi_m)[:] * V_int[r1,:] * psi_k[r1] * psi_l[:] )
 
     #V_nmkl = np.sum( np.conjugate(psi_n) * np.conjugate(psi_m) * \
     #            psi_k * psi_l  ) * dR**2
