@@ -1,4 +1,4 @@
 Traceback (most recent call last):
-  File "/gpfs/fs2/scratch/ekoessle/MBPT_Projects/2_Electron_Square_Well/main.py", line 1, in <module>
-    import numpy as np
-ModuleNotFoundError: No module named 'numpy'
+  File "/var/spool/slurm/job12594522/slurm_script", line 10, in <module>
+    import main
+ModuleNotFoundError: No module named 'main'

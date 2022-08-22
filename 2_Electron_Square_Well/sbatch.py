@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/software/anaconda3/2020.11/bin/python
 #SBATCH -p debug
 #SBATCH --job-name=sbatch
 #SBATCH --nodes=1 --ntasks=1
@@ -7,5 +7,6 @@
 #SBATCH --output=main.out
 #SBATCH --error=main.err
 
-#module load python3
-python3 main.py
+import main
+
+main.main()
