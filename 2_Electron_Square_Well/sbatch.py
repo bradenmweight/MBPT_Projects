@@ -10,7 +10,10 @@
 import os
 import sys
 sys.path.append(os.popen("pwd").read().replace("\n",""))
+import numpy as np
 
 import main
 
 main.main()
+#main.get_globals()
+#print(main.get_Coulomb_element_single_particle( [1,1,1,1], np.linspace(-5,5,100) ))
