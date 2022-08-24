@@ -25,25 +25,43 @@ def get_RGrid():
     return np.linspace( 0, L, NL )
 
 def get_init_sp_wavefunctions():
-    return [ j for j in range(1,N_electrons+1) ] # Start all electrons in ground state SP orbital
+    wfn_sp_dicts = []
+    for j in range( 1, N_electrons+1 ):
+        if ( j % 2 == 0 ):
+            wfn_sp_dicts.append( {"sp_state":j, "spin":1} )
+        else:
+            wfn_sp_dicts.append( {"sp_state":j, "spin":-1} )
+    
+    return wfn_sp_dicts # Start all electrons in ground state SP orbital
 
-def get_init_mb_wavefunctions( wfn_sp_labels ):
-    wfn_mb_labels = []
+def get_init_mb_wavefunctions( wfn_sp_dicts ):
+    
+    labels = [ wfn_sp_dicts[j]["sp_state"] for j in range(len(wfn_sp_dicts)) ]
+    spins  = [ wfn_sp_dicts[j]["spin"] for j in range(len(wfn_sp_dicts)) ]
+
     wfn_mb_dictionaries = []
 
-    for count, subset in enumerate(itertools.permutations(wfn_sp_labels)):
+    for count, subset in enumerate( itertools.permutations(labels) ):
         subset = [ j for j in subset ]
+        print(subset)
 
-        if ( count % 2 != 0 ): 
-            wfn_mb_dictionaries.append( { "labels":subset, "spin":1, "sign":1 } )
-            wfn_mb_dictionaries.append( { "labels":subset, "spin":-1, "sign":1 } )
+        if ( count % 2 == 0 ):
+            spin_labels = np.array(subset).astype(int) * -np.array(spins).astype(int)
+            wfn_mb_dictionaries.append( { "spin-labels":spin_labels, "sign":1 } )
+
+            spin_labels = np.array(subset).astype(int) * np.array(spins).astype(int)
+            wfn_mb_dictionaries.append( { "spin-labels":spin_labels, "sign":-1 } )
         else:
-            wfn_mb_dictionaries.append( { "labels":subset, "spin":1, "sign":-1 } )
-            wfn_mb_dictionaries.append( { "labels":subset, "spin":-1, "sign":-1 } )
+            spin_labels = np.array(subset).astype(int) * -np.array(spins).astype(int)
+            wfn_mb_dictionaries.append( { "spin-labels":spin_labels, "sign":1 } )
+
+            spin_labels = np.array(subset).astype(int) * np.array(spins).astype(int)
+            wfn_mb_dictionaries.append( { "spin-labels":spin_labels, "sign":-1 } )
 
 
 
-        print( wfn_mb_dictionaries[-1] )
+    for d in range( len(wfn_mb_dictionaries) ):
+        print( wfn_mb_dictionaries[d] )
 
 
 
@@ -101,8 +119,8 @@ def save_1P_DMs( particle_rhos ):
 def main():
     get_globals()
     RGrid = get_RGrid()
-    wfn_sp_labels = get_init_sp_wavefunctions()
-    wfn_mb_labels = get_init_mb_wavefunctions(wfn_sp_labels)
+    wfn_sp_dicts = get_init_sp_wavefunctions()
+    wfn_mb_dicts = get_init_mb_wavefunctions(wfn_sp_dicts)
 
 
     #particle_rhos = get_init_rhos( wfn_sp_labels, RGrid )
