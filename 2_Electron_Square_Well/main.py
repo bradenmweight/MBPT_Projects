@@ -29,20 +29,26 @@ def get_init_sp_wavefunctions():
 
 def get_init_mb_wavefunctions( wfn_sp_labels ):
     wfn_mb_labels = []
+    wfn_mb_dictionaries = []
 
     for count, subset in enumerate(itertools.permutations(wfn_sp_labels)):
+        subset = [ j for j in subset ]
+
         if ( count % 2 != 0 ): 
-            subset = [ -j for j in subset ]
+            wfn_mb_dictionaries.append( { "labels":subset, "spin":1, "sign":1 } )
+            wfn_mb_dictionaries.append( { "labels":subset, "spin":-1, "sign":1 } )
         else:
-            subset = [ j for j in subset ]
-        print(subset)
-        wfn_mb_labels.append( subset )
+            wfn_mb_dictionaries.append( { "labels":subset, "spin":1, "sign":-1 } )
+            wfn_mb_dictionaries.append( { "labels":subset, "spin":-1, "sign":-1 } )
+
+
+
+        print( wfn_mb_dictionaries[-1] )
 
 
 
 
-    return wfn_mb_labels
-
+    return wfn_mb_dictionaries
 
 def get_external_potential( RGrid ):
     V = np.zeros(( NL ))
