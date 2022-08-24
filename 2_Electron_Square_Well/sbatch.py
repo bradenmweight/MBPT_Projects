@@ -7,9 +7,6 @@
 #SBATCH --output=main_file.out
 #SBATCH --error=main_file.err
 
-import os
-import sys
-sys.path.append(os.popen("pwd").read().replace("\n",""))
-from main import main
+import main
 
-main()
+main.main()
