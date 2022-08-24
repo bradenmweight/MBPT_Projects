@@ -22,7 +22,7 @@ def get_RGrid():
     return np.linspace( 0, L, NL )
 
 def get_init_wavefunctions():
-    return ( j for j in range(1,N_electrons+1) ) # Start all electrons in ground state SP orbital
+    return ( 1 for j in range(1,N_electrons+1) ) # Start all electrons in ground state SP orbital
 
 def get_external_potential( RGrid ):
     V = np.zeros(( NL ))
@@ -58,7 +58,6 @@ def get_Coulomb_element_single_particle( indices, RGrid ):
     V_int = 1 / R_DIFF
     V_int[ np.diag_indices(NL) ] = 0.0
 
-    # CHECK THIS ??? ~ BMW
     V_nmkl = 0
     for r1 in range( NL ):
         V_nmkl += np.sum( np.conjugate(psi_n)[r1] * np.conjugate(psi_m)[:] * V_int[r1,:] * psi_k[r1] * psi_l[:] )
@@ -67,7 +66,7 @@ def get_Coulomb_element_single_particle( indices, RGrid ):
 
 def save_1P_DMs( particle_rhos ):
     DM_DIR = "1P_DMs/"
-    sp.call(f"mkdir {DM_DIR}",shell=True)
+    sp.call(f"mkdir -p {DM_DIR}",shell=True)
 
     for j in range(N_electrons):
         plt.imshow( particle_rhos[j], origin='lower' )
@@ -77,7 +76,7 @@ def main():
     get_globals()
     RGrid = get_RGrid()
     wfn_sp_labels = get_init_wavefunctions()
-    particle_rhos = get_init_rhos( wfn_sp_labels, RGrid ) 
+    particle_rhos = get_init_rhos( wfn_sp_labels, RGrid )
     
     save_1P_DMs( particle_rhos )
 
