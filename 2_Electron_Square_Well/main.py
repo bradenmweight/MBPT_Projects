@@ -31,10 +31,12 @@ def get_init_mb_wavefunctions( wfn_sp_labels ):
     wfn_mb_labels = []
 
     for count, subset in enumerate(itertools.permutations(wfn_sp_labels)):
-        if ( count % 2 == 0 ): 
+        if ( count % 2 != 0 ): 
             subset = [ -j for j in subset ]
+        else:
+            subset = [ j for j in subset ]
         print(subset)
-
+        wfn_mb_labels.append( subset )
 
 
 
