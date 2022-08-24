@@ -45,18 +45,9 @@ def get_init_mb_wavefunctions( wfn_sp_dicts ):
         subset = [ j for j in subset ]
         print(subset)
 
-        if ( count % 2 == 0 ):
-            spin_labels = np.array(subset).astype(int) * -np.array(spins).astype(int)
-            wfn_mb_dictionaries.append( { "spin-labels":spin_labels, "sign":1 } )
+        spin_labels = np.array(subset).astype(int) * -np.array(spins).astype(int)
+        wfn_mb_dictionaries.append( { "spin-labels":(((count+1)%2)*2-1)*spin_labels, "sign":((count+1)%2)*2-1 } )
 
-            spin_labels = np.array(subset).astype(int) * np.array(spins).astype(int)
-            wfn_mb_dictionaries.append( { "spin-labels":spin_labels, "sign":-1 } )
-        else:
-            spin_labels = np.array(subset).astype(int) * -np.array(spins).astype(int)
-            wfn_mb_dictionaries.append( { "spin-labels":spin_labels, "sign":1 } )
-
-            spin_labels = np.array(subset).astype(int) * np.array(spins).astype(int)
-            wfn_mb_dictionaries.append( { "spin-labels":spin_labels, "sign":-1 } )
 
 
 
