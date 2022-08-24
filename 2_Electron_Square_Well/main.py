@@ -1,6 +1,9 @@
 import numpy as np
 import subprocess as sp
 from matplotlib import pyplot as plt
+from math import factorial
+import itertools
+
 
 def get_globals():
     # Simulation Box
@@ -21,8 +24,23 @@ def get_globals():
 def get_RGrid():
     return np.linspace( 0, L, NL )
 
-def get_init_wavefunctions():
-    return ( 1 for j in range(1,N_electrons+1) ) # Start all electrons in ground state SP orbital
+def get_init_sp_wavefunctions():
+    return [ j for j in range(1,N_electrons+1) ] # Start all electrons in ground state SP orbital
+
+def get_init_mb_wavefunctions( wfn_sp_labels ):
+    wfn_mb_labels = []
+
+    for count, subset in enumerate(itertools.permutations(wfn_sp_labels)):
+        if ( count % 2 == 0 ): 
+            subset = [ -j for j in subset ]
+        print(subset)
+
+
+
+
+
+    return wfn_mb_labels
+
 
 def get_external_potential( RGrid ):
     V = np.zeros(( NL ))
@@ -75,10 +93,12 @@ def save_1P_DMs( particle_rhos ):
 def main():
     get_globals()
     RGrid = get_RGrid()
-    wfn_sp_labels = get_init_wavefunctions()
-    particle_rhos = get_init_rhos( wfn_sp_labels, RGrid )
-    
-    save_1P_DMs( particle_rhos )
+    wfn_sp_labels = get_init_sp_wavefunctions()
+    wfn_mb_labels = get_init_mb_wavefunctions(wfn_sp_labels)
+
+
+    #particle_rhos = get_init_rhos( wfn_sp_labels, RGrid )
+    #save_1P_DMs( particle_rhos )
 
 
 
