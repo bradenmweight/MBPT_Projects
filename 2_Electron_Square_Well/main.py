@@ -105,7 +105,6 @@ def save_1P_DMs( particle_rhos ):
 
 def get_all_Coulomb_elements( RGrid ):
     V = np.zeros(( N_SP_States, N_SP_States, N_SP_States, N_SP_States ))
-    
     for n in range( 1, N_SP_States+1 ):
         for m in range( 1, N_SP_States+1 ):
             for k in range( 1, N_SP_States+1 ):
