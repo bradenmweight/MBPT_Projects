@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/var/spool/slurm/job12616874/slurm_script", line 19, in <module>
-    print(main.get_Coulomb_element_single_particle( [1,1,1,1], np.linspace(-5,5,100) ))
-  File "/scratch/ekoessle/MBPT_Projects/2_Electron_Square_Well/main.py", line 77, in get_Coulomb_element_single_particle
-    R_DIFF[ np.diag_indices(NL) ] = 1.0
-IndexError: index 100 is out of bounds for axis 0 with size 100

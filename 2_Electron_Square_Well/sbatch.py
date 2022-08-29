@@ -16,4 +16,4 @@ import main
 
 main.main()
 #main.get_globals()
-#print(main.get_Coulomb_element_single_particle( [1,1,1,1], np.linspace(-5,5,100) ))
+#print(main.get_Coulomb_element_single_particle( [1,1,1,1], main.get_RGrid() ))
