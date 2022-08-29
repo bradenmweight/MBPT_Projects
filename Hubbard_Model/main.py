@@ -4,7 +4,6 @@ from matplotlib import pyplot as plt
 from math import factorial
 import itertools
 
-
 def get_globals():
     # Simulation Box
     global L, NL
@@ -12,10 +11,10 @@ def get_globals():
     NL = 1000 # a.u.
 
     # External Potential
-    global L_Well, V_well, N_SP_States
-    L_Well = 4 # a.u.
-    V_well = -10 # a.u.
-    N_SP_States = 2
+    global t, U, N_Sites
+    t = 1 # a.u.
+    U = 0.1 # a.u.
+    N_Sites = 2
 
     # Particle Properties
     global m, N_electrons
@@ -27,12 +26,13 @@ def get_RGrid():
 
 def get_init_sp_wavefunctions():
     wfn_sp_dicts = []
-    for j in range( 1, N_electrons+1 ):
-        if ( j % 2 == 0 ):
-            wfn_sp_dicts.append( {"sp_state":1, "spin":1} )
-        else:
-            wfn_sp_dicts.append( {"sp_state":1, "spin":-1} )
+
+    wfn_sp_dicts.append( {"sp_state":1, "spin":1} )
+    wfn_sp_dicts.append( {"sp_state":1, "spin":-1} )
     
+    wfn_sp_dicts.append( {"sp_state":2, "spin":1} )
+    wfn_sp_dicts.append( {"sp_state":2, "spin":-1} )
+
     return wfn_sp_dicts # Start all electrons in ground state SP orbital
 
 def get_init_mb_wavefunctions( wfn_sp_dicts ):
@@ -75,25 +75,11 @@ def get_init_rhos( wfn_sp_labels, RGrid ) :
         particle_rhos.append( np.outer( state_j_left, state_j_right ) )
     return particle_rhos
 
-def get_Coulomb_element_single_particle( indices, RGrid ):
-    n,m,k,l = indices
-    dR = RGrid[1]-RGrid[0]
-    psi_n = get_SP_state( n, RGrid )
-    psi_m = get_SP_state( m, RGrid )
-    psi_k = get_SP_state( k, RGrid )
-    psi_l = get_SP_state( l, RGrid )
+def get_Hubbard_U():
+    return U
 
-    R_DIFF = np.abs( np.subtract.outer( RGrid, RGrid ) )
-    R_DIFF[ np.diag_indices(NL) ] = 1.0
-    V_int = 1 / R_DIFF
-    V_int[ np.diag_indices(NL) ] = 0.0
-
-    V_nmkl = 0
-    for r1 in range( NL ):
-        V_nmkl += np.sum( np.conjugate(psi_n)[r1] * np.conjugate(psi_m)[:] * V_int[r1,:] * psi_k[r1] * psi_l[:] )
-    V_nmkl *= (RGrid[1] - RGrid[0])**2
-
-    return V_nmkl
+def get_Hubbard_t():
+    return t
 
 def save_1P_DMs( particle_rhos ):
     DM_DIR = "1P_DMs/"
@@ -114,25 +100,57 @@ def get_all_Coulomb_elements( RGrid ):
                     #print ( "n,m,k,l", n,m,k,l,V[n-1,m-1,k-1,l-1]  )
     return V
 
+def RK4(F, y0, h):
+
+    k1 = h * F
+    k2 = h * F + h * k1 / 2
+    k3 = h * F + h * k2 / 2
+    k4 = h * F + h * k3
+    return y0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
+
+def init_variables( wfn_sp_dicts, M = 2):
+
+    """
+    M : int -- Maximum order of BBGKY "TIER"
+    """
+
+    N = N_Sites
+
+    A = np.array([ np.zeros(( (2*N) ** (m+2) )) for m in range( M ) ], dtype=object)    # np.zeros(( M, (2*N) ** M  ), dtype=complex)
+    
+    # 00,-11
+    A[0,4] = 1.0
+    
+    # 11,-11
+    A[0,7] = 1.0
+    
+    # 00,1-1
+    A[0,8] = 1.0
+    
+    # 11,1-1
+    A[0,11] = 1.0
+    
+    
+    
+    
+    
+
+    for j in range(1, int(M/2)):
+        for n in range(100):
+            A[2 * j, 5 * j + 2] += factor * np.exp(- j * beta * omega_) * factorial(j) * comb(n,j) * np.exp(- n * beta * omega_)
+        A[2 * j, 7 * j + 3] = A[2 * j, 5 * j + 2]
+
+    return(A)
+
+
 def main():
     get_globals()
     RGrid = get_RGrid()
 
-    V_nmkl = get_all_Coulomb_elements( RGrid )
-
     wfn_sp_dicts = get_init_sp_wavefunctions()
-    wfn_mb_dicts = get_init_mb_wavefunctions(wfn_sp_dicts)
+    #wfn_mb_dicts = get_init_mb_wavefunctions(wfn_sp_dicts)
+    init_variables( wfn_sp_dicts ):
 
-
-    #print( "V_nmkl", V_nmkl )
-
-    #particle_rhos = get_init_rhos( wfn_sp_labels, RGrid )
-    #save_1P_DMs( particle_rhos )
-
-
-
-    #V_nmkl = get_Coulomb_element( (1,2,3,4), RGrid )
-    #print( V_nmkl )
 
 
 
