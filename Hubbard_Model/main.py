@@ -21,6 +21,10 @@ def get_globals():
     m = 1 # a.u.
     N_electrons = 2
 
+    # BBGKY Variables
+    global M_Tiers
+    M_Tiers = 4
+
 def get_RGrid():
     return np.linspace( 0, L, NL )
 
@@ -108,50 +112,55 @@ def RK4(F, y0, h):
     k4 = h * F + h * k3
     return y0 + (k1 + 2 * k2 + 2 * k3 + k4) / 6
 
-def init_variables( wfn_sp_dicts, M = 2):
+def init_variables( MC_dict ):
 
-    """
-    M : int -- Maximum order of BBGKY "TIER"
-    """
+    assert( M_Tiers <= 2 * N_electrons ), "There are too many requested TIERS. "
 
-    N = N_Sites
+    # m = 0 Tier : 1e GF --> Track Single Operator (e.g., <a^+_{0,up} a_{0,up}> )
+    # m = 1 Tier : 2e GF --> Track Double Operator (e.g., <a^+_{1,up} a_{1,up} a^+_{2,up} a_{2,up}> )
+    #A = np.array([ np.zeros(( (2*N) ** (m+2) )) for m in range( M ) ], dtype=object)    # np.zeros(( M, (2*N) ** M  ), dtype=complex)
+    
+    # m=0: 1
+    # m=1: (2*N_Sites-1)**2
+    # m=2: (2*N_Sites-1)**2 * (2*N_Sites-2)**2
+    # length = (factorial(2*N_Sites-1) / (factorial(2*N_Sites-1-m) * factorial(m)))**2
+    GF_dict = {}
+    for m in range( M_Tiers ):
+        length = int( (factorial(2*N_Sites-1) // (factorial(2*N_Sites-1-m) * factorial(m)))**2 )
+        print( "m,length =", m, length )
+        GF_dict.update(  { m : np.zeros(( length )) } )
 
-    A = np.array([ np.zeros(( (2*N) ** (m+2) )) for m in range( M ) ], dtype=object)    # np.zeros(( M, (2*N) ** M  ), dtype=complex)
-    
-    # 00,-11
-    A[0,4] = 1.0
-    
-    # 11,-11
-    A[0,7] = 1.0
-    
-    # 00,1-1
-    A[0,8] = 1.0
-    
-    # 11,1-1
-    A[0,11] = 1.0
-    
-    
-    
-    
-    
+    return GF_dict
 
-    for j in range(1, int(M/2)):
-        for n in range(100):
-            A[2 * j, 5 * j + 2] += factor * np.exp(- j * beta * omega_) * factorial(j) * comb(n,j) * np.exp(- n * beta * omega_)
-        A[2 * j, 7 * j + 3] = A[2 * j, 5 * j + 2]
+def get_multiconfigurational_basis():
 
-    return(A)
+    ref = [ 0 for j in range( 2 * N_Sites ) ]
+    for el in range( N_electrons ):
+        ref[el] = 1
+    tmp = itertools.permutations( ref )
+    
+    basis = []
+    for it in tmp:
+        basis.append( it )
 
+    basis = set(basis)
+
+    return basis
+
+def get_hashmap_dict():
+
+    basis = get_multiconfigurational_basis()
+    dict = {}
+    for count, vec in enumerate(basis):
+        dict.update( {vec : count}  )
+    return dict
 
 def main():
     get_globals()
     RGrid = get_RGrid()
-
-    wfn_sp_dicts = get_init_sp_wavefunctions()
-    #wfn_mb_dicts = get_init_mb_wavefunctions(wfn_sp_dicts)
-    init_variables( wfn_sp_dicts ):
-
-
+    
+    MC_dict = get_hashmap_dict()
+    init_variables( MC_dict )
 
 
 if ( __name__ == "__main__" ):
